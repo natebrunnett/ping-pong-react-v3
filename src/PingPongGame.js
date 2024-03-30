@@ -6,12 +6,12 @@ import KeyboardConfig from './KeyboardConfig';
 
 function PingPongGame() {
   // State for ball position and velocity
+  const SCREEN_HEIGHT = 900;
+  const SCREEN_WIDTH = 900;
   const [ballPosition, setBallPosition] = useState({ x: 400, y: 300 });
   const [ballVelocity, setBallVelocity] = useState({ vx: 5, vy: 5 });
   const [paddlePosition, setPaddlePosition] = useState(50);
   const [arrowKeyPressed, setArrowKeyPressed] = useState(null);
-  const SCREEN_HEIGHT = 900;
-  const SCREEN_WIDTH = 900;
   const BALL_RADIUS = 10;
   // ai opponent
   const [opponentPaddlePosition, setOpponentPaddlePosition] = useState(50);
