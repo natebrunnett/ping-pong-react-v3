@@ -1,10 +1,10 @@
 # Developer Note
 Hi everyone!
 Here is ping pong in react.  To clone this project use these commands.
-$ git clone ...git link...
-$ cd ping-pong-react-v3
-$ npm i 
-$ npm start
+  $ git clone ...git link...
+  $ cd ping-pong-react-v3
+  $ npm i 
+  $ npm start
 
 # Developer Note
 This project was made possible with ChatGbt
