@@ -1,146 +1,124 @@
-// PingPongGame.js
 import React, { useState, useEffect } from 'react';
-import OpponentPaddle from './OpponentPaddle';
 import Ball from './Ball';
-import KeyboardConfig from './KeyboardConfig';
 
 function PingPongGame() {
-  
-let handleTouchStart = (event) => {
-    const touch = event.touches[0];
-    if (touch.clientX < window.innerWidth / 2) {
-      // Touch is on the left side of the screen
-      setPaddlePosition(paddlePosition - 2);
-          console.log(parseFloat(SCREEN_WIDTH) * parseFloat(paddlePosition) /100)
-          console.log(paddlePosition)
-      // Add your desired logic here
-    }
-  }
 
-
-  // State for ball position and velocity
-  const SCREEN_HEIGHT = window.innerHeight;
-  const SCREEN_WIDTH= window.innerWidth;
-    const [ballPosition, setBallPosition] = useState({ x: 400, y: 300 });
+  // Ball position and velocity
+  const [ballPosition, setBallPosition] = useState({ x: 400, y: 300 });
   const [ballVelocity, setBallVelocity] = useState({ vx: 5, vy: 5 });
+  let SCREEN_HEIGHT = 0;
+  if (window.innerHeight<= 900) SCREEN_HEIGHT = window.innerHeight
+  else SCREEN_HEIGHT = 900
+  let SCREEN_WIDTH = 0;
+  if (window.innerWidth<= 900) SCREEN_WIDTH = window.innerWidth
+  else SCREEN_HEIGHT = 900
+
+  // Paddle positions
   const [paddlePosition, setPaddlePosition] = useState(50);
-  const [arrowKeyPressed, setArrowKeyPressed] = useState(null);
-  const BALL_RADIUS = 10;
-  // ai opponent
-  const [opponentPaddlePosition, setOpponentPaddlePosition] = useState(50);
-  const [ballDirection, setBallDirection] = useState('right');
+  const [aiPaddlePosition, setAIPaddlePosition] = useState(50);
 
   // Game loop
   useEffect(() => {
     const interval = setInterval(() => {
-      setBallPosition((prevPosition) => ({
+      // Update ball position
+      setBallPosition(prevPosition => ({
         x: prevPosition.x + ballVelocity.vx,
         y: prevPosition.y + ballVelocity.vy,
       }));
 
-      let newX = ballPosition.x;
-      let newY = ballPosition.y;
-      //console.log(newX)
-
-      //ai
-       if (ballDirection === 'right') {
-        newX += 5;
-        if (newX <= SCREEN_WIDTH / 2) {
-          setBallDirection('left');
+      // Update AI paddle position based on ball velocity
+      setAIPaddlePosition(prevPosition => {
+        let newPosition = prevPosition;
+        if (ballVelocity.vx > 0) {
+          newPosition = Math.min(prevPosition + 1, 75);
+        } else if (ballVelocity.vx < 0) {
+          newPosition = Math.max(prevPosition - 1, 0);
         }
-      } else {
-        newX -= 5;
-        if (newX >= SCREEN_WIDTH / 2) {
-          setBallDirection('right');
-        }
-      }
+        return newPosition;
+      });
 
-      // AI opponent follows the ball
-      if (newY >= 10) {
-        const distance = Math.abs(newX - opponentPaddlePosition);
-        if (distance < 2) {
-          // Do nothing if ball is too close
-        } else if (newX > opponentPaddlePosition) {
-          if (opponentPaddlePosition < 60) {setOpponentPaddlePosition(opponentPaddlePosition + 2);}
-        } else {
-          if (opponentPaddlePosition > 0) {setOpponentPaddlePosition(opponentPaddlePosition - 2);}
-        }
-      }
-
-      // Add collision detection logic here
-
+      // Collision detection logic
       // Ball hits paddle
       if (
-      ballPosition.y >= SCREEN_HEIGHT - 100 && // ball may collide with paddle at 90% from the top of screenHeight
-      ballPosition.x >= parseFloat(SCREEN_WIDTH) * parseFloat(paddlePosition) /100 &&
-      ballPosition.x <= parseFloat(SCREEN_WIDTH) * parseFloat(paddlePosition) /100 + 320
-      && ballVelocity.vy === 5
+        ballPosition.y >= SCREEN_HEIGHT - 100 && // ball may collide with paddle at 90% from the top of screenHeight
+        ballPosition.x >= (SCREEN_WIDTH * paddlePosition) / 100 &&
+        ballPosition.x <= (SCREEN_WIDTH * paddlePosition) / 100 + 128 &&
+        ballVelocity.vy === 5
       ) {
-        setBallVelocity((prev) => ({ ...prev, vy: -5 }));
-        //setScore(score + 1);
+        setBallVelocity(prev => ({ ...prev, vy: -5 }));
       }
 
-      //if ball hits top
-      if(ballPosition.y >= SCREEN_HEIGHT - 40)
-      {
-        setBallVelocity((e) => ({
-            vy: -5, vx: e.vx
-        }))
-      }
-      //if ball hits bottom 
-      if (ballPosition.y <= 0){
-        setBallVelocity((e) => ({
-            vy: 5, vx: e.vx
-        }))
-      }
-      //if ball hits right wall
-      if(ballPosition.x >= SCREEN_WIDTH - 40) {
-        setBallVelocity((e) => ({
-            vy: e.vy, vx: -5
-        }))
-      } 
-      //if ball hits left wall
-      if (ballPosition.x <= 0){
-        setBallVelocity((e) => ({
-            vy: e.vy, vx: 5
-        }))
+      // Ball hits AI paddle
+      if (
+        ballPosition.y <= 100 && // Ball may collide with AI paddle at 10% from the top of the screen
+        ballPosition.x >= (SCREEN_WIDTH * aiPaddlePosition) / 100 &&
+        ballPosition.x <= (SCREEN_WIDTH * aiPaddlePosition) / 100 + 128 &&
+        ballVelocity.vy === -5
+      ) {
+        setBallVelocity(prev => ({ ...prev, vy: 5 }));
       }
 
-      const handleKeyPress = (e) => {
-        
-        if (e === 'ArrowLeft' && paddlePosition > 0) {
-          setPaddlePosition(paddlePosition - 2);
-          console.log(parseFloat(SCREEN_WIDTH) * parseFloat(paddlePosition) /100)
-          console.log(paddlePosition)
-        } else if (e === 'ArrowRight' && paddlePosition < 63) {
-          setPaddlePosition(paddlePosition + 2);
-          console.log(parseFloat(SCREEN_WIDTH) * parseFloat(paddlePosition) /100)
-          console.log(paddlePosition)
-        }
+      // Ball hits bottom
+      if (ballPosition.y >= SCREEN_HEIGHT - 50) {
+        setBallVelocity(prev => ({ vy: -5, vx: prev.vx }));
       }
-
-      handleKeyPress(arrowKeyPressed)
-
+      // Ball hits top
+      if (ballPosition.y <= 10) {
+        setBallVelocity(prev => ({ vy: 5, vx: prev.vx }));
+      }
+      // Ball hits right wall
+      if (ballPosition.x >= SCREEN_WIDTH - 50) {
+        setBallVelocity(prev => ({ vy: prev.vy, vx: -5 }));
+      }
+      // Ball hits left wall
+      if (ballPosition.x <= 5) {
+        setBallVelocity(prev => ({ vy: prev.vy, vx: 5 }));
+      }
+      
     }, 5);
 
-    return () => clearInterval(interval);
-  }, [ballPosition, ballVelocity]);
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {clearInterval(interval); window.removeEventListener('keydown', handleKeyDown);}
+  }, [ballPosition, ballVelocity, paddlePosition, aiPaddlePosition]);
+
+  const handleTouchStart = (event) => {
+    const touch = event.touches[0];
+    if (touch.clientX < window.innerWidth / 2) {
+      // Touch is on the left side of the screen
+      setPaddlePosition(prev => Math.max(prev - 2, 0));
+    } else {
+      // Touch is on the right side of the screen
+      setPaddlePosition(prev => Math.min(prev + 2, 100));
+    }
+  };
+
+  const handleKeyDown = (event) => {
+    switch (event.key) {
+      case 'ArrowLeft':
+        if(paddlePosition >=8 ) setPaddlePosition(prev => Math.max(prev - 8, 0));
+        break;
+      case 'ArrowRight':
+        if(paddlePosition <= 68) setPaddlePosition(prev => Math.min(prev + 8, 100));
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
-    <>
+    <div className='flex items-center justify-center h-screen bg-black'>
       <div
-    style={{ height: window.innerHeight, width: window.innerWidth }}
-  onTouchStart={handleTouchStart}
-    >
-    <KeyboardConfig arrowKeyPressed={arrowKeyPressed} setArrowKeyPressed={setArrowKeyPressed}/>
-<div className="absolute bg-slate-600" style={{width: SCREEN_WIDTH, height: SCREEN_HEIGHT}}>
-      <div className="absolute bg-black border-2 border-white w-20 h-10" style={{ left: `${opponentPaddlePosition}%`, top: '10%' }}></div>
-      <div className="absolute bg-black border-2 border-white w-20 h-10" style={{ left: `${paddlePosition}%`, top: '90%' }}></div>
-      <Ball position={ballPosition} />
+        style={{ height: window.innerHeight, width: window.innerWidth }}
+        onTouchStart={handleTouchStart}
+      >
+        <div className="absolute bg-slate-600" style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT }}>
+          <div className="absolute bg-black border-2 border-white w-32 h-10" style={{ left: `${paddlePosition}%`, top: '90%' }}></div>
+          <div className="absolute bg-black border-2 border-white w-32 h-10" style={{ left: `${aiPaddlePosition}%`, top: '10%' }}></div>
+          <Ball position={ballPosition} />
+        </div>
+      </div>
     </div>
-    </div>
-    </>
-    
   );
 }
 
