@@ -10,8 +10,8 @@ function PingPongGame() {
   if (window.innerHeight<= 900) SCREEN_HEIGHT = window.innerHeight
   else SCREEN_HEIGHT = 900
   let SCREEN_WIDTH = 0;
-  if (window.innerWidth<= 900) SCREEN_WIDTH = window.innerWidth
-  else SCREEN_HEIGHT = 900
+  if (window.innerWidth<= 500) SCREEN_WIDTH = window.innerWidth
+  else SCREEN_WIDTH = 500
 
   // Paddle positions
   const [paddlePosition, setPaddlePosition] = useState(50);
@@ -109,7 +109,7 @@ function PingPongGame() {
   return (
     <div className='flex items-center justify-center h-screen bg-black'>
       <div
-        style={{ height: window.innerHeight, width: window.innerWidth }}
+        style={{ height: SCREEN_HEIGHT, width: SCREEN_WIDTH }}
         onTouchStart={handleTouchStart}
       >
         <div className="absolute bg-slate-600" style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT }}>
