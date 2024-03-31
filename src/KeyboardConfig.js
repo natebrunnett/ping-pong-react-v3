@@ -1,6 +1,8 @@
 import React,  { useState, useEffect } from 'react'
 
 function KeyboardConfig({arrowKeyPressed, setArrowKeyPressed}) {
+  
+  
 
     const handleKeyDown = (event) => {
       switch (event.key) {
@@ -31,6 +33,7 @@ function KeyboardConfig({arrowKeyPressed, setArrowKeyPressed}) {
   
     return (
         <>
+        
         </>
     );
   };

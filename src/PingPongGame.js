@@ -5,10 +5,23 @@ import Ball from './Ball';
 import KeyboardConfig from './KeyboardConfig';
 
 function PingPongGame() {
+  
+let handleTouchStart = (event) => {
+    const touch = event.touches[0];
+    if (touch.clientX < window.innerWidth / 2) {
+      // Touch is on the left side of the screen
+      setPaddlePosition(paddlePosition - 2);
+          console.log(parseFloat(SCREEN_WIDTH) * parseFloat(paddlePosition) /100)
+          console.log(paddlePosition)
+      // Add your desired logic here
+    }
+  }
+
+
   // State for ball position and velocity
-  const SCREEN_HEIGHT = 900;
-  const SCREEN_WIDTH = 900;
-  const [ballPosition, setBallPosition] = useState({ x: 400, y: 300 });
+  const SCREEN_HEIGHT = window.innerHeight;
+  const SCREEN_WIDTH= window.innerWidth;
+    const [ballPosition, setBallPosition] = useState({ x: 400, y: 300 });
   const [ballVelocity, setBallVelocity] = useState({ vx: 5, vy: 5 });
   const [paddlePosition, setPaddlePosition] = useState(50);
   const [arrowKeyPressed, setArrowKeyPressed] = useState(null);
@@ -27,7 +40,7 @@ function PingPongGame() {
 
       let newX = ballPosition.x;
       let newY = ballPosition.y;
-      console.log(newX)
+      //console.log(newX)
 
       //ai
        if (ballDirection === 'right') {
@@ -94,6 +107,7 @@ function PingPongGame() {
       }
 
       const handleKeyPress = (e) => {
+        
         if (e === 'ArrowLeft' && paddlePosition > 0) {
           setPaddlePosition(paddlePosition - 2);
           console.log(parseFloat(SCREEN_WIDTH) * parseFloat(paddlePosition) /100)
@@ -114,13 +128,19 @@ function PingPongGame() {
 
   return (
     <>
+      <div
+    style={{ height: window.innerHeight, width: window.innerWidth }}
+  onTouchStart={handleTouchStart}
+    >
     <KeyboardConfig arrowKeyPressed={arrowKeyPressed} setArrowKeyPressed={setArrowKeyPressed}/>
-    <div className="relative bg-slate-600" style={{width: SCREEN_WIDTH, height: SCREEN_HEIGHT}}>
-      <div className="absolute bg-black border-2 border-white w-80 h-10" style={{ left: `${opponentPaddlePosition}%`, top: '10%' }}></div>
-      <div className="absolute bg-black border-2 border-white w-80 h-10" style={{ left: `${paddlePosition}%`, top: '90%' }}></div>
+<div className="absolute bg-slate-600" style={{width: SCREEN_WIDTH, height: SCREEN_HEIGHT}}>
+      <div className="absolute bg-black border-2 border-white w-20 h-10" style={{ left: `${opponentPaddlePosition}%`, top: '10%' }}></div>
+      <div className="absolute bg-black border-2 border-white w-20 h-10" style={{ left: `${paddlePosition}%`, top: '90%' }}></div>
       <Ball position={ballPosition} />
     </div>
+    </div>
     </>
+    
   );
 }
 
